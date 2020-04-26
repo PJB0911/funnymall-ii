@@ -529,7 +529,7 @@ Spring MVC负责Controller相关逻辑，两者最终形成互补配置：
 
 ![](https://github.com/PJB0911/funnymall-ii/blob/master/images/Spring%E5%92%8CSpringMVC%E4%BA%92%E8%A1%A5%E9%85%8D%E7%BD%AE.png)
 
-要做到互补配置，使用@ComponentScan注解即可，Spring和Spring MVC扫描的base package都为fun.sherman.tlmall，但是Spring通过exclude-filter将@Controller注解的组件排除在外，Spring MVC通过include-filter将@Controller注解的组件包含在内，最终两者形成互补配置。
+要做到互补配置，使用@ComponentScan注解即可，Spring和Spring MVC扫描的base package都为com.mall，但是Spring通过exclude-filter将@Controller注解的组件排除在外，Spring MVC通过include-filter将@Controller注解的组件包含在内，最终两者形成互补配置。
 
 #### 8.2 Spring MVC异常处理
 
