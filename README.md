@@ -316,7 +316,7 @@ Tomcat配合Nginx实现单机上部署两个Tomcat节点的集群。
 </Service>
 ```
 
-坑：分别启动两个Tomcat节点，启动时可能报错："An invalid domain [.sherman.com] was specified for this cookie"，
+坑：分别启动两个Tomcat节点，启动时可能报错："An invalid domain [.funnymall.com] was specified for this cookie"，
 解：Tomcat8.5以前的版本中，domain格式是：".funnymall.com"，前面需要加.
    Tomcat8.5及其以后的版本中，domain格式是："funnymall.com"，前面不需要加.
 
@@ -381,7 +381,7 @@ Redis知识参考 [Notes](https://github.com/CyC2018/CS-Notes/blob/master/notes/
 - 用户重置密码时，需要回答正确密保问题，为了防止横向越权，回答正确密保问题时用户都会保存一个token，重置密码时需要携带这个token，同样的问题，
 如果两次请求不在同一个Tomcat服务器上，会导致Tomcat获取不到token，最终重置密码失败
 
-解决方案——[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/util/CookieUtil.java)
+解决方案——[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/util/CookieUtil.java)
 - 用户第一次登录成功后，服务器会产生一个cookie，cookie的key为tlmall_login_token，value为session.getId()，同时设置该cookie的domain为**根域名**，path为**/**，过期时间自定义，返还给客户端。
 - 向Redis中设置键，该键的key为cookie的value（即session.getId()），值为User序列化的字符串，并为该键设置过期时间（30分钟）
 - 由于服务器返回给客户端的cookie的domain为 **根域名** ，path为 **/** ，所以访问该域名及其任意子域名都会携带该cookie，无论请求打到哪个Tomcat服务器，
@@ -392,20 +392,20 @@ Redis知识参考 [Notes](https://github.com/CyC2018/CS-Notes/blob/master/notes/
 用户成功登录后会在Redis中创建一个key，并且设置过期时间。当用户访问其它有效请求时，应该重置用户登录的有效时间，否则用户登录后Redis对应的key到达默认的过期时间
 后，就必须重新登录。
 
-解决方案——[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/filter/SessionExpireFilter.java)
+解决方案——[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/controller/common/SessionExpireFilter.java)
 - 创建一个监听器，监听所有的请求（/*.do），根据cookie的value到Redis中查找对应的value值并反序列化成User对象，如果User对象不为null，就重置Redis中key的过期时间
 
 #### 5.3 JedisPool的配置及Redis API封装
 
-- JedisPool的配置—— [源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/common/RedisPool.java)
-- Redis API的封装—— [源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/util/RedisUtil.java)
+- JedisPool的配置—— [源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/common/RedisPool.java)
+- Redis API的封装—— [源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/util/RedisPoolUtil.java)
 
 #### 5.4 Json序列化和反序列化
 
 项目中Redis键的value值通常为String类型，当需要将Bean对象（例如登录时的用户User Bean对象）存入到Redis中时，需要进行序列化操作；当从Redis中读取对应的String值后
 还需要进行反序列化成对应的Bean对象。
 
-除此之外，对于复杂的Bean对象，例如List、Set、Map等进行序列化和反序列化的方法，可以配合 **TypeReference** 和 **JavaType** 完成——[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/util/JacksonUtil.java)
+除此之外，对于复杂的Bean对象，例如List、Set、Map等进行序列化和反序列化的方法，可以配合 **TypeReference** 和 **JavaType** 完成——[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/util/JsonUtil.java)
 ```java
 /**
  * 复杂集合（List、Map、Set等）的反序列化方式1
@@ -442,7 +442,7 @@ public static <T> T string2Obj(String str, Class<?> collectionsClass, Class<?>..
 
 #### 5.5 Guava中缓存的迁移
 
-和单点登录原理类似，将回答密保正确后返回的token存放到Redis中，并且设置过期时间，重置密码时，对应的Tomcat服务器去Redis中查找对应的token存在且还在有效期内，决定能否重置密码，[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/controller/portal/UserController.java)
+和单点登录原理类似，将回答密保正确后返回的token存放到Redis中，并且设置过期时间，重置密码时，对应的Tomcat服务器去Redis中查找对应的token存在且还在有效期内，决定能否重置密码，[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/controller/portal/UserController.java)
 
 
 
@@ -483,7 +483,7 @@ Redis分布式算法在数据非常分布不均匀情况下，注意这是个相
 
 #### 6.3 分布式连接池
 
-单个Redis节点使用的是JedisPool连接池，分布式Redis使用的是ShardedJedisPool，除了连接池的基本配置外，还需要一个包含各个redis节点的List——[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/common/ShardedRedisPool.java)：
+单个Redis节点使用的是JedisPool连接池，分布式Redis使用的是ShardedJedisPool，除了连接池的基本配置外，还需要一个包含各个redis节点的List——[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/common/RedisShardedPool.java)：
 ```java
 private static void init() {
         JedisPoolConfig config = new JedisPoolConfig();
@@ -509,7 +509,7 @@ private static void init() {
 
 #### 6.4 分布式连接池工具类
 
-该工具类功能和实现和RedisUtils类相似，只需要将获取的Jedis改成ShardedJedis，并且是从ShardedRedisPool中getResource()即可—— [源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/util/ShardedRedisUtil.java)
+该工具类功能和实现和RedisUtils类相似，只需要将获取的Jedis改成ShardedJedis，并且是从ShardedRedisPool中getResource()即可—— [源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/util/RedisShardedPoolUtil.java)
 
 ------
 
@@ -574,9 +574,8 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         </mvc:interceptor>
 
     </mvc:interceptors>
-}
 ```
-然后在AdminAuthorityInterceptor类中实现对应的拦截器原理即可，具体代码—— [源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/interceptor/AdminAuthorityInterceptor.java)
+然后在AdminAuthorityInterceptor类中实现对应的拦截器原理即可，具体代码—— [源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/controller/common/interceptor/AuthorityInterceptor.java)
 
 #### 9.2 避免拦截登录递归
 
@@ -648,7 +647,7 @@ if (user == null || user.getRole() != Const.Role.ROLE_ADMIN) {
 
 RestFul风格相关知识介绍[参考](https://github.com/tanglei302wqy/notes/blob/master/spring%E5%85%A8%E5%AE%B6%E6%A1%B6/springmvc/markdown/5_REST%E9%A3%8E%E6%A0%BCCRUD.md)
 
-对商品详情和列表进行改造——[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/controller/portal/ProductController.java)
+对商品详情和列表进行改造——[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/controller/portal/ProductController.java)
 ```java
 //    @RequestMapping(value = "detail.do", method = RequestMethod.POST)
 //    public ServerResponse<ProductDetailVo> detail(@RequestParam("productId") Integer productId) {
@@ -797,7 +796,7 @@ select * from tlmall_product where id <> `66` for update;
 
 ### 十二、分布式锁原理&实现
 
-在上一节最后的定时关单实现中，直接调用iOrderService.closeOrder(hour);方法，这种关单方法只适合单个tomcat服务情况，在tomcat集群模式下会出现并发问题，需要使用分布式锁来解决——[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/task/CloseOrderTask.java)
+在上一节最后的定时关单实现中，直接调用iOrderService.closeOrder(hour);方法，这种关单方法只适合单个tomcat服务情况，在tomcat集群模式下会出现并发问题，需要使用分布式锁来解决——[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/task/CloseOrderTask.java)
 
 #### 12.1 分布式锁原理
 
