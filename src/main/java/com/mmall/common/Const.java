@@ -17,6 +17,7 @@ public class Const {
     public static final String CURRENT_USER = "currentUser";
     public static final String EMAIL = "email";         //用户检验字段的类型
     public static final String USERNAME = "username";   //用户检验字段的类型
+    public static final String TOKEN_PREFIX = "token_";
     /**
      * Product排序参数：asc |  desc
      */
@@ -197,5 +198,24 @@ public class Const {
 
     }
 
+    /**
+     * Redis的Key过期时间
+     */
+    public interface RedisKeyExpires {
+        /**
+         * 用户登录的token有效期为30分钟
+         */
+        int USER_LOGIN_TOKEN = 60 * 30;
+        /**
+         * 用户重置密码的token有效期为12小时
+         */
+        int USER_RESET_PASSWORD_TOKEN = 60 * 60 * 12;
+    }
 
+    public interface RedisLock {
+        /**
+         * 关闭订单的分布式锁
+         */
+        String CLOSE_ORDER_TASK_LOCK = "CLOSE_ORDER_TASK_LOCK";
+    }
 }

@@ -1,5 +1,6 @@
 package com.mmall.dao;
 
+import com.mmall.pojo.Order;
 import com.mmall.pojo.OrderItem;
 import org.apache.ibatis.annotations.Param;
 
@@ -57,4 +58,6 @@ public interface OrderItemMapper {
      * @param orderItemList 订单详情列表
      */
     void batchInsert(@Param("orderItemList") List<OrderItem> orderItemList);
+
+
 }

@@ -7,8 +7,10 @@
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 	http://www.springframework.org/schema/mvc
 	http://www.springframework.org/schema/mvc/spring-mvc.xsd">
-
-    <context:component-scan base-package="com.mmall" annotation-config="true"/>
+    <!-- springmvc扫描包指定到controller，防止重复扫描 -->
+    <context:component-scan base-package="com.mmall.controller" annotation-config="true" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
 
     <mvc:annotation-driven>
         <mvc:message-converters>
@@ -38,5 +40,21 @@
         <property name="defaultEncoding" value="UTF-8"></property>
     </bean>
 
+    <!--定义拦截器-->
+    <!-- /**  所有路径及里面的子路径 -->
+    <!-- /*  当前路径下的所有路径，不包含子路径 -->
+  <!--  例如：
+        manage/a.do  /manage/*
+        manage/b.do  /manage/*
+        manage/product/save.do /manage/**
+        manage/order/detail.do /manage/**-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/manage/**"/>
+           <!-- <mvc:exclude-mapping path="/manage/user/login.do"/>-->
+            <bean class="com.mmall.controller.common.interceptor.AuthorityInterceptor"/>
+        </mvc:interceptor>
+
+    </mvc:interceptors>
 
 </beans>

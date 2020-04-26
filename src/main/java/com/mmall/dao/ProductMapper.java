@@ -61,4 +61,13 @@ public interface ProductMapper {
      * @return  商品列表
      */
     List<Product> selectByNameAndCategoryIds(@Param("productName") String productName, @Param("categoryIdList") List<Integer> categoryIdLis);
+
+
+
+    /**
+     *  查询商品库存 ，返回值Integer，考虑到商品已删除的情况，返回可能为null。
+      * @param id 商品id
+     * @return 商品库存
+     */
+    Integer selectStockByProductId(Integer id);
 }

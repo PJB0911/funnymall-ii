@@ -67,4 +67,19 @@ public interface OrderMapper {
      * @return  订单列表（按照创建时间降序）
      */
     List<Order> selectAllOrder();
+
+    /**
+     * 查询未付款订单
+     * @param status 未付款状态
+     * @param date  创建时间
+     * @return
+     */
+    List<Order> selectOrderStatusByCreateTime(@Param("status") Integer status, @Param("date") String date);
+
+    /**
+     * 更新订单状态为 关闭 0
+     * @param id 订单id
+     * @return 更新行数
+     */
+    int closeOrderByOrderId(Integer id);
 }
