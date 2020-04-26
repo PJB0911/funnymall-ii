@@ -149,7 +149,7 @@ tlmall-springboot-ii
 - Tomcat&Nginx集群部署
 - Redis基础
 - 单点登录
-- Redis分布式算法&分布式连接池
+- Redis分布式连接池
 - Spring-Session无侵入式集成
 - Spring MVC异常处理
 - 拦截器管理员权限统一校验
