@@ -470,7 +470,7 @@ Redis分布式算法在数据非常分布不均匀情况下，注意这是个相
 
 引入虚拟节点：
 
-![](./images/虚拟节点.png)
+![](https://github.com/PJB0911/funnymall-ii/blob/master/images/%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%E8%A7%A3%E5%86%B3hash%E5%80%BE%E6%96%9C%E6%80%A7.png)
 
 一种直观的解决思路：增加hash空间环上的redis节点个数，极端情况下，当redis节点数正好等于hash空间环的数量时，数据分布是均匀的。引入虚拟节点的思路正是：在不添加正是物理
 节点的情况下，增加额外的虚拟节点。当key打到虚拟节点上时，会在进行一次hash操作，映射到真实的redis节点上。引入虚拟节点后缓存命中率的经验公式为：
@@ -527,7 +527,7 @@ private static void init() {
 当Spring整合Spring MVC时需要重新整合两者的配置文件，官方推荐的方式是：Spring和Spring MVC形成父子容器配置，Spring负责业务实现和Dao层相关逻辑，
 Spring MVC负责Controller相关逻辑，两者最终形成互补配置：
 
-![](./images/Spring和SpringMVC互补配置.png)
+![](https://github.com/PJB0911/funnymall-ii/blob/master/images/Spring%E5%92%8CSpringMVC%E4%BA%92%E8%A1%A5%E9%85%8D%E7%BD%AE.png)
 
 要做到互补配置，使用@ComponentScan注解即可，Spring和Spring MVC扫描的base package都为fun.sherman.tlmall，但是Spring通过exclude-filter将@Controller注解的组件排除在外，Spring MVC通过include-filter将@Controller注解的组件包含在内，最终两者形成互补配置。
 
@@ -815,7 +815,7 @@ select * from tlmall_product where id <> `66` for update;
 
 流程图：
 
-![](./images/分布式锁流程图.png)
+![](https://github.com/PJB0911/funnymall-ii/blob/master/images/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%B5%81%E7%A8%8B%E5%9B%BE.png)
 
 #### 12.2 分布式锁实现一
 
