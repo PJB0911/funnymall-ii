@@ -137,7 +137,7 @@ tlmall-springboot-ii
              +- WEB-INF
                  +- lib  
                  +- dispatcher-servlet.xml				// SpringMVC 主配置文件
-         	     +- web.xml
+         	 +- web.xml
 ```
 
 
