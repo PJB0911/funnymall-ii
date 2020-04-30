@@ -135,7 +135,7 @@ tlmall-springboot-ii
              +- zfbinfo.properties 						 //支付宝配置文件
    		+- webapp
              +- WEB-INF
-                 +- lib  
+                 +- lib  						// 支付宝jar包
                  +- dispatcher-servlet.xml				// SpringMVC 主配置文件
          	 +- web.xml
 ```
