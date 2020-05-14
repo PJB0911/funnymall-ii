@@ -754,7 +754,7 @@ Spring Schedule Cron生成器：[在线Cron生成器](https://qqe2.com/cron)
 
 - 在主配置类上加入：@EnableScheduling注解，表示开启Spring Schedule定时自动配置功能
 
-- 使用@Component注解将自定义的定时关单组件加入到Spring Boot组件中
+- 使用@Component注解将自定义的定时关单组件加入到Spring组件中
 
 - 在对应的定时关单方法上加入@Scheduled注解，确定定时间隔：
 
