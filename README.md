@@ -338,7 +338,7 @@ Tomcat配合Nginx实现单机上部署两个Tomcat节点的集群。
         # weight表示概率，并不表示次数，即0.8的概率打在9080节点上，0.2的概率打在8080节点上
         server 127.0.0.1:8080 weight=1;
         server 127.0.0.1:9080 weight=4;
-        # 如果配置了host（127.0.0.1 www.sherman.com），下面两个配置也是ok的
+        # 如果配置了host（127.0.0.1 www.funnymall.com），下面两个配置也是ok的
         # server www.funnymall.com:8080 weight=1;
         # server www.funnymall.com:9080 weight=4;
     }
