@@ -333,7 +333,7 @@ Tomcat配合Nginx实现单机上部署两个Tomcat节点的集群。
     - 在Nginx的配置文件/conf/nginx.conf中加入**include vhost/*.com.conf**包含两个配置文件
     - 在**www.funnymall.com.conf**中配置负载均衡策略:
     ```conf
-    # 对www.sherman.com域名进行负载均衡
+    # 对www.funnymall.com域名进行负载均衡
     upstream www.funnymall.com{
         # weight表示概率，并不表示次数，即0.8的概率打在9080节点上，0.2的概率打在8080节点上
         server 127.0.0.1:8080 weight=1;
