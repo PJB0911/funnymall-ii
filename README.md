@@ -290,6 +290,7 @@ mvn clean package -Dmaven.test.skip=true -Pdev
 
 
 ### 三、Tomcat集群部署
+参考教程：[Nginx+Tomcat搭建集群环境](https://blog.51cto.com/zero01/2112989)
 
 #### 3.1 修改Tomcat环境变量
 
