@@ -387,6 +387,7 @@ Redis知识参考 [Notes](https://github.com/CyC2018/CS-Notes/blob/master/notes/
 - 向Redis中设置键，该键的key为cookie的value（即session.getId()），值为User序列化的字符串，并为该键设置过期时间（30分钟）
 - 由于服务器返回给客户端的cookie的domain为 **根域名** ，path为 **/** ，所以访问该域名及其任意子域名都会携带该cookie，无论请求打到哪个Tomcat服务器，
 先从该cookie中获取value值，以value为key从Redis中查找对应字符串并进行反序列化成User对象，如果User对象不为null，证明用户处于登录状态，否则需要重新登录
+-进行需要用户登录的相关操作时，比如下单，管理购物车和收货地址，每次都从该cookie中获取value值，如果value值为null，表示用户未登录；如果value值（即sessionID）存在，以value为key从Redis中查找对应字符串并进行反序列化成User对象，如果User对象不为null，证明用户处于登录状态，否则需要重新登录
 
 #### 5.2 Redis中的key如何刷新有效时间
 
