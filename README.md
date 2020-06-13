@@ -632,9 +632,9 @@ if (user == null || user.getRole() != Const.Role.ROLE_ADMIN) {
 
 参考后台管理员用户统一权限判断的拦截思路，也可以对前台路径可以对用户是否登录进行拦截。但是在项目的前台UserController处理器中
 ，还是需要拿到User对象，而拦截器只能返回Boolean类型。如果拦截器对该控制器也进行拦截，相当于preHandle()方法返回true，进入UserController后，
-又需要进行一次判断用户是否登录的逻辑，因此这里不推荐将UserController包含在门户用户登录拦截器的拦截返回内。
+又需要进行一次判断用户是否登录的逻辑，因此这里不推荐将UserController包含在门户用户登录拦截器的拦截范围内。
 
-同理，在收货地址的Controller、购物车的Controller中，因为要避免横向越权，也需要拿到对应用户的userId，所以也不推荐将其包含在拦截范围内。
+同理，在收货地址的Controller、购物车的Controller、订单管理的Controller中，因为要避免横向越权，也需要拿到对应用户的userId，所以也不推荐将其包含在拦截范围内。
 
 项目中对于用户登录不做拦截处理。
 
