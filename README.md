@@ -565,7 +565,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 
 #### 9.1 实现拦截器
 
-在Spring Boot中，只需要让配置类实现WebMvcConfigurer接口，并在实现方法addInterceptors()中加入一个实现了HandlerInterceptor自定义的拦截器组件即可：
+本项目采用xml配置拦截器：
 ```xml
     <mvc:interceptors>
         <mvc:interceptor>
@@ -593,7 +593,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 前端json格式数据。
 
 为了能在preHandle()方法返回false时，也能给前端返回对应的json格式的simditor数据信息，需要借助response的PrintWriter，封装好一个Map，并通过
-JackUtil将Map转换成字符串，最后通过PrintWriter返回给前端：
+JsonUtil将Map转换成字符串，最后通过PrintWriter返回给前端：
 
 ```java
 // preHandle()拦截到请求后，发现用户未登录或者用户非管理员
