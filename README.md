@@ -348,7 +348,7 @@ Tomcat配合Nginx实现单机上部署两个Tomcat节点的集群。
         charset utf-8; 
         listen 80; 
         autoindex on; 
-        server_name sherman.com www.sherman.com; 
+        server_name funnymall.com www.funnymall.com; 
         access_log D:\\nginx\\logs\\main_access_8080.log combined; 
         index index.html index.htm index.jsp index.php; 
         #error_page 404 /404.html; 
