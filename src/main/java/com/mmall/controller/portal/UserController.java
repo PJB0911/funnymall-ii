@@ -202,6 +202,7 @@ public class UserController {
         ServerResponse<User> response = iUserService.updateInformation(user);
         if (response.isSuccess()) {
             response.getData().setUsername(currentUser.getUsername());
+            //更新缓存
             RedisShardedPoolUtil.setEx(loginToken, JsonUtil.obj2String(response.getData()),Const.RedisKeyExpires.USER_LOGIN_TOKEN);
         }
         return response;

@@ -102,7 +102,7 @@ public class UserServiceImpl implements IUserService {
     public ServerResponse<String> checkAnswer(String username, String question, String answer) {
         int resultCount = userMapper.checkAnswer(username, question, answer);
         if (resultCount > 0) {
-            //生成密保Token，key为"token_+用户名"，保存在本地缓存
+            //生成密保Token，key为"token_+用户名"，保存在redis缓存
             String forgetToken = UUID.randomUUID().toString();
             RedisShardedPoolUtil.setEx(Const.TOKEN_PREFIX+username,forgetToken,60*60*12);
             return ServerResponse.createBySuccess(forgetToken);
