@@ -135,9 +135,9 @@ tlmall-springboot-ii
              +- zfbinfo.properties 						 //支付宝配置文件
    		+- webapp
              +- WEB-INF
-                 +- lib  
+                 +- lib  						// 支付宝jar包
                  +- dispatcher-servlet.xml				// SpringMVC 主配置文件
-         	     +- web.xml
+         	 +- web.xml
 ```
 
 
@@ -149,7 +149,7 @@ tlmall-springboot-ii
 - Tomcat&Nginx集群部署
 - Redis基础
 - 单点登录
-- Redis分布式算法&分布式连接池
+- Redis分布式连接池
 - Spring-Session无侵入式集成
 - Spring MVC异常处理
 - 拦截器管理员权限统一校验
@@ -290,6 +290,7 @@ mvn clean package -Dmaven.test.skip=true -Pdev
 
 
 ### 三、Tomcat集群部署
+参考教程：[Nginx+Tomcat搭建集群环境](https://blog.51cto.com/zero01/2112989)
 
 #### 3.1 修改Tomcat环境变量
 
@@ -316,7 +317,7 @@ Tomcat配合Nginx实现单机上部署两个Tomcat节点的集群。
 </Service>
 ```
 
-坑：分别启动两个Tomcat节点，启动时可能报错："An invalid domain [.sherman.com] was specified for this cookie"，
+坑：分别启动两个Tomcat节点，启动时可能报错："An invalid domain [.funnymall.com] was specified for this cookie"，
 解：Tomcat8.5以前的版本中，domain格式是：".funnymall.com"，前面需要加.
    Tomcat8.5及其以后的版本中，domain格式是："funnymall.com"，前面不需要加.
 
@@ -333,12 +334,12 @@ Tomcat配合Nginx实现单机上部署两个Tomcat节点的集群。
     - 在Nginx的配置文件/conf/nginx.conf中加入**include vhost/*.com.conf**包含两个配置文件
     - 在**www.funnymall.com.conf**中配置负载均衡策略:
     ```conf
-    # 对www.sherman.com域名进行负载均衡
+    # 对www.funnymall.com域名进行负载均衡
     upstream www.funnymall.com{
         # weight表示概率，并不表示次数，即0.8的概率打在9080节点上，0.2的概率打在8080节点上
         server 127.0.0.1:8080 weight=1;
         server 127.0.0.1:9080 weight=4;
-        # 如果配置了host（127.0.0.1 www.sherman.com），下面两个配置也是ok的
+        # 如果配置了host（127.0.0.1 www.funnymall.com），下面两个配置也是ok的
         # server www.funnymall.com:8080 weight=1;
         # server www.funnymall.com:9080 weight=4;
     }
@@ -347,7 +348,7 @@ Tomcat配合Nginx实现单机上部署两个Tomcat节点的集群。
         charset utf-8; 
         listen 80; 
         autoindex on; 
-        server_name sherman.com www.sherman.com; 
+        server_name funnymall.com www.funnymall.com; 
         access_log D:\\nginx\\logs\\main_access_8080.log combined; 
         index index.html index.htm index.jsp index.php; 
         #error_page 404 /404.html; 
@@ -381,31 +382,31 @@ Redis知识参考 [Notes](https://github.com/CyC2018/CS-Notes/blob/master/notes/
 - 用户重置密码时，需要回答正确密保问题，为了防止横向越权，回答正确密保问题时用户都会保存一个token，重置密码时需要携带这个token，同样的问题，
 如果两次请求不在同一个Tomcat服务器上，会导致Tomcat获取不到token，最终重置密码失败
 
-解决方案——[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/util/CookieUtil.java)
+解决方案——[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/util/CookieUtil.java)
 - 用户第一次登录成功后，服务器会产生一个cookie，cookie的key为tlmall_login_token，value为session.getId()，同时设置该cookie的domain为**根域名**，path为**/**，过期时间自定义，返还给客户端。
 - 向Redis中设置键，该键的key为cookie的value（即session.getId()），值为User序列化的字符串，并为该键设置过期时间（30分钟）
-- 由于服务器返回给客户端的cookie的domain为 **根域名** ，path为 **/** ，所以访问该域名及其任意子域名都会携带该cookie，无论请求打到哪个Tomcat服务器，
-先从该cookie中获取value值，以value为key从Redis中查找对应字符串并进行反序列化成User对象，如果User对象不为null，证明用户处于登录状态，否则需要重新登录
+- 由于服务器返回给客户端的cookie的domain为 **根域名** ，path为 **/** ，所以访问该域名及其任意子域名都会携带该cookie，无论请求打到哪个Tomcat服务器，先从该cookie中获取value值，以value为key从Redis中查找对应字符串并进行反序列化成User对象，如果User对象不为null，证明用户处于登录状态，否则需要重新登录
+- 进行需要用户登录的相关操作时，比如下单，管理购物车和收货地址，每次都从该cookie中获取value值，如果value值为null，表示用户未登录；如果value值（即sessionID）存在，以value为key从Redis中查找对应字符串并进行反序列化成User对象，如果User对象不为null，证明用户处于登录状态，否则需要重新登录
 
 #### 5.2 Redis中的key如何刷新有效时间
 
 用户成功登录后会在Redis中创建一个key，并且设置过期时间。当用户访问其它有效请求时，应该重置用户登录的有效时间，否则用户登录后Redis对应的key到达默认的过期时间
 后，就必须重新登录。
 
-解决方案——[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/filter/SessionExpireFilter.java)
+解决方案——[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/controller/common/SessionExpireFilter.java)
 - 创建一个监听器，监听所有的请求（/*.do），根据cookie的value到Redis中查找对应的value值并反序列化成User对象，如果User对象不为null，就重置Redis中key的过期时间
 
 #### 5.3 JedisPool的配置及Redis API封装
 
-- JedisPool的配置—— [源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/common/RedisPool.java)
-- Redis API的封装—— [源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/util/RedisUtil.java)
+- JedisPool的配置—— [源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/common/RedisPool.java)
+- Redis API的封装—— [源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/util/RedisPoolUtil.java)
 
 #### 5.4 Json序列化和反序列化
 
 项目中Redis键的value值通常为String类型，当需要将Bean对象（例如登录时的用户User Bean对象）存入到Redis中时，需要进行序列化操作；当从Redis中读取对应的String值后
 还需要进行反序列化成对应的Bean对象。
 
-除此之外，对于复杂的Bean对象，例如List、Set、Map等进行序列化和反序列化的方法，可以配合 **TypeReference** 和 **JavaType** 完成——[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/util/JacksonUtil.java)
+除此之外，对于复杂的Bean对象，例如List、Set、Map等进行序列化和反序列化的方法，可以配合 **TypeReference** 和 **JavaType** 完成——[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/util/JsonUtil.java)
 ```java
 /**
  * 复杂集合（List、Map、Set等）的反序列化方式1
@@ -442,7 +443,7 @@ public static <T> T string2Obj(String str, Class<?> collectionsClass, Class<?>..
 
 #### 5.5 Guava中缓存的迁移
 
-和单点登录原理类似，将回答密保正确后返回的token存放到Redis中，并且设置过期时间，重置密码时，对应的Tomcat服务器去Redis中查找对应的token存在且还在有效期内，决定能否重置密码，[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/controller/portal/UserController.java)
+和单点登录原理类似，将回答密保正确后返回的token存放到Redis中，并且设置过期时间，重置密码时，对应的Tomcat服务器去Redis中查找对应的token存在且还在有效期内，决定能否重置密码，[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/controller/portal/UserController.java)
 
 
 
@@ -470,7 +471,7 @@ Redis分布式算法在数据非常分布不均匀情况下，注意这是个相
 
 引入虚拟节点：
 
-![](./images/虚拟节点.png)
+![](https://github.com/PJB0911/funnymall-ii/blob/master/images/%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%E8%A7%A3%E5%86%B3hash%E5%80%BE%E6%96%9C%E6%80%A7.png)
 
 一种直观的解决思路：增加hash空间环上的redis节点个数，极端情况下，当redis节点数正好等于hash空间环的数量时，数据分布是均匀的。引入虚拟节点的思路正是：在不添加正是物理
 节点的情况下，增加额外的虚拟节点。当key打到虚拟节点上时，会在进行一次hash操作，映射到真实的redis节点上。引入虚拟节点后缓存命中率的经验公式为：
@@ -483,7 +484,7 @@ Redis分布式算法在数据非常分布不均匀情况下，注意这是个相
 
 #### 6.3 分布式连接池
 
-单个Redis节点使用的是JedisPool连接池，分布式Redis使用的是ShardedJedisPool，除了连接池的基本配置外，还需要一个包含各个redis节点的List——[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/common/ShardedRedisPool.java)：
+单个Redis节点使用的是JedisPool连接池，分布式Redis使用的是ShardedJedisPool，除了连接池的基本配置外，还需要一个包含各个redis节点的List——[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/common/RedisShardedPool.java)：
 ```java
 private static void init() {
         JedisPoolConfig config = new JedisPoolConfig();
@@ -509,7 +510,7 @@ private static void init() {
 
 #### 6.4 分布式连接池工具类
 
-该工具类功能和实现和RedisUtils类相似，只需要将获取的Jedis改成ShardedJedis，并且是从ShardedRedisPool中getResource()即可—— [源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/util/ShardedRedisUtil.java)
+该工具类功能和实现和RedisUtils类相似，只需要将获取的Jedis改成ShardedJedis，并且是从ShardedRedisPool中getResource()即可—— [源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/util/RedisShardedPoolUtil.java)
 
 ------
 
@@ -527,9 +528,9 @@ private static void init() {
 当Spring整合Spring MVC时需要重新整合两者的配置文件，官方推荐的方式是：Spring和Spring MVC形成父子容器配置，Spring负责业务实现和Dao层相关逻辑，
 Spring MVC负责Controller相关逻辑，两者最终形成互补配置：
 
-![](./images/Spring和SpringMVC互补配置.png)
+![](https://github.com/PJB0911/funnymall-ii/blob/master/images/Spring%E5%92%8CSpringMVC%E4%BA%92%E8%A1%A5%E9%85%8D%E7%BD%AE.png)
 
-要做到互补配置，使用@ComponentScan注解即可，Spring和Spring MVC扫描的base package都为fun.sherman.tlmall，但是Spring通过exclude-filter将@Controller注解的组件排除在外，Spring MVC通过include-filter将@Controller注解的组件包含在内，最终两者形成互补配置。
+要做到互补配置，使用@ComponentScan注解即可，Spring和Spring MVC扫描的base package都为com.mall，但是Spring通过exclude-filter将@Controller注解的组件排除在外，Spring MVC通过include-filter将@Controller注解的组件包含在内，最终两者形成互补配置。
 
 #### 8.2 Spring MVC异常处理
 
@@ -564,7 +565,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 
 #### 9.1 实现拦截器
 
-在Spring Boot中，只需要让配置类实现WebMvcConfigurer接口，并在实现方法addInterceptors()中加入一个实现了HandlerInterceptor自定义的拦截器组件即可：
+本项目采用xml配置拦截器：
 ```xml
     <mvc:interceptors>
         <mvc:interceptor>
@@ -574,9 +575,8 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         </mvc:interceptor>
 
     </mvc:interceptors>
-}
 ```
-然后在AdminAuthorityInterceptor类中实现对应的拦截器原理即可，具体代码—— [源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/interceptor/AdminAuthorityInterceptor.java)
+然后在AdminAuthorityInterceptor类中实现对应的拦截器原理即可，具体代码—— [源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/controller/common/interceptor/AuthorityInterceptor.java)
 
 #### 9.2 避免拦截登录递归
 
@@ -593,7 +593,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 前端json格式数据。
 
 为了能在preHandle()方法返回false时，也能给前端返回对应的json格式的simditor数据信息，需要借助response的PrintWriter，封装好一个Map，并通过
-JackUtil将Map转换成字符串，最后通过PrintWriter返回给前端：
+JsonUtil将Map转换成字符串，最后通过PrintWriter返回给前端：
 
 ```java
 // preHandle()拦截到请求后，发现用户未登录或者用户非管理员
@@ -632,9 +632,9 @@ if (user == null || user.getRole() != Const.Role.ROLE_ADMIN) {
 
 参考后台管理员用户统一权限判断的拦截思路，也可以对前台路径可以对用户是否登录进行拦截。但是在项目的前台UserController处理器中
 ，还是需要拿到User对象，而拦截器只能返回Boolean类型。如果拦截器对该控制器也进行拦截，相当于preHandle()方法返回true，进入UserController后，
-又需要进行一次判断用户是否登录的逻辑，因此这里不推荐将UserController包含在门户用户登录拦截器的拦截返回内。
+又需要进行一次判断用户是否登录的逻辑，因此这里不推荐将UserController包含在门户用户登录拦截器的拦截范围内。
 
-同理，在收货地址的Controller、购物车的Controller中，因为要避免横向越权，也需要拿到对应用户的userId，所以也不推荐将其包含在拦截范围内。
+同理，在收货地址的Controller、购物车的Controller、订单管理的Controller中，因为要避免横向越权，也需要拿到对应用户的userId，所以也不推荐将其包含在拦截范围内。
 
 项目中对于用户登录不做拦截处理。
 
@@ -648,7 +648,7 @@ if (user == null || user.getRole() != Const.Role.ROLE_ADMIN) {
 
 RestFul风格相关知识介绍[参考](https://github.com/tanglei302wqy/notes/blob/master/spring%E5%85%A8%E5%AE%B6%E6%A1%B6/springmvc/markdown/5_REST%E9%A3%8E%E6%A0%BCCRUD.md)
 
-对商品详情和列表进行改造——[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/controller/portal/ProductController.java)
+对商品详情和列表进行改造——[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/controller/portal/ProductController.java)
 ```java
 //    @RequestMapping(value = "detail.do", method = RequestMethod.POST)
 //    public ServerResponse<ProductDetailVo> detail(@RequestParam("productId") Integer productId) {
@@ -755,7 +755,7 @@ Spring Schedule Cron生成器：[在线Cron生成器](https://qqe2.com/cron)
 
 - 在主配置类上加入：@EnableScheduling注解，表示开启Spring Schedule定时自动配置功能
 
-- 使用@Component注解将自定义的定时关单组件加入到Spring Boot组件中
+- 使用@Component注解将自定义的定时关单组件加入到Spring组件中
 
 - 在对应的定时关单方法上加入@Scheduled注解，确定定时间隔：
 
@@ -797,7 +797,7 @@ select * from tlmall_product where id <> `66` for update;
 
 ### 十二、分布式锁原理&实现
 
-在上一节最后的定时关单实现中，直接调用iOrderService.closeOrder(hour);方法，这种关单方法只适合单个tomcat服务情况，在tomcat集群模式下会出现并发问题，需要使用分布式锁来解决——[源码](https://github.com/tanglei302wqy/tlmall-springboot-ii/blob/master/src/main/java/fun/sherman/tlmall/task/CloseOrderTask.java)
+在上一节最后的定时关单实现中，直接调用iOrderService.closeOrder(hour);方法，这种关单方法只适合单个tomcat服务情况，在tomcat集群模式下会出现并发问题，需要使用分布式锁来解决——[源码](https://github.com/PJB0911/funnymall-ii/blob/master/src/main/java/com/mmall/task/CloseOrderTask.java)
 
 #### 12.1 分布式锁原理
 
@@ -816,7 +816,7 @@ select * from tlmall_product where id <> `66` for update;
 
 流程图：
 
-![](./images/分布式锁流程图.png)
+![](https://github.com/PJB0911/funnymall-ii/blob/master/images/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%B5%81%E7%A8%8B%E5%9B%BE.png)
 
 #### 12.2 分布式锁实现一
 
