@@ -329,8 +329,8 @@ Tomcat配合Nginx实现单机上部署两个Tomcat节点的集群。
 ```
 - Nginx负载均衡策略：
     - 在Nginx的conf目录下新建vhost文件夹，里面新建两个配置：
-        - [www.funnymall.com.conf]()
-        - [img.funnymall.com.conf]()
+        - [www.funnymall.com.conf](https://github.com/PJB0911/funnymall-ii/blob/master/%E5%8F%82%E8%80%83%E6%96%87%E4%BB%B6/www.funnymall.com.conf)
+        - [img.funnymall.com.conf](https://github.com/PJB0911/funnymall-ii/blob/master/%E5%8F%82%E8%80%83%E6%96%87%E4%BB%B6/img.funnymall.com.conf)
     - 在Nginx的配置文件/conf/nginx.conf中加入**include vhost/*.com.conf**包含两个配置文件
     - 在**www.funnymall.com.conf**中配置负载均衡策略:
     ```conf
