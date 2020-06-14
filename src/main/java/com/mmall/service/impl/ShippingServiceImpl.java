@@ -28,7 +28,7 @@ public class ShippingServiceImpl implements IShippingService {
 
     @Override
     public ServerResponse add(Integer userId, Shipping shipping) {
-        shipping.setUserId(userId);
+        shipping.setUserId(userId);  //防止前端传来的shipping中userId 不是当前用户的id
         int rowCount = shippingMapper.insert(shipping);
         if (rowCount > 0) {
             Map result = Maps.newHashMap();
