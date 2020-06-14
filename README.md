@@ -606,8 +606,8 @@ if (user == null || user.getRole() != Const.Role.ROLE_ADMIN) {
 		if(StringUtils.equals(className,"ProductManageController") && StringUtils.equals(methodName,"richtextImgUpload")){
 			Map resultMap = Maps.newHashMap
 			resultMap.put("success",false);
-            resultMap.put("msg","请登录管理员" 
-            out.print(JsonUtil.obj2String(resultMap));
+           		resultMap.put("msg","请登录管理员"); 
+           		out.print(JsonUtil.obj2String(resultMap));
          }else{
             out.print(JsonUtil.obj2String(ServerResponse.createByErrorMessage("拦截器拦截,用户未登录")))       
          }
