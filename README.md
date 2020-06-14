@@ -454,8 +454,8 @@ public static <T> T string2Obj(String str, Class<?> collectionsClass, Class<?>..
 解：注意服务器需要开放对应redis端口，阿里云配置对应端口安全组，protected-mode no以及各个redis节点不要开启主从复制、sentinel、集群模式
 #### 6.1 Redis分布式算法原理
 
-简单的Redis hash算法（节点取余法）在Redis集群进行扩容或者缩容时需要迁移大量的key，大量缓存缓存失效，导致客户端请求直接穿透到DB上。
-一致性hash算法：需要构建一个环形hash空间，redis节点分布在该环形hash空间上。当有一个需要存入key时，通过hash算法映射到环形hash空间上顺时针寻找最近的redis节点，该key就会存储在当前redis节点中。当需要取出一个key时，算法流程相同。参考 [Notes仓库redis集群小节](https://github.com/tanglei302wqy/notes/blob/master/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%26%E6%95%B0%E6%8D%AE%E5%BA%93/redis/6_%E9%9B%86%E7%BE%A4%EF%BC%881%EF%BC%89.md)
+- 简单的Redis hash算法（节点取余法）在Redis集群进行扩容或者缩容时需要迁移大量的key，大量缓存缓存失效，导致客户端请求直接穿透到DB上。
+- 一致性hash算法：需要构建一个环形hash空间，redis节点分布在该环形hash空间上。当有一个需要存入key时，通过hash算法映射到环形hash空间上顺时针寻找最近的redis节点，该key就会存储在当前redis节点中。当需要取出一个key时，算法流程相同。参考 [Notes仓库redis集群小节](https://github.com/tanglei302wqy/notes/blob/master/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%26%E6%95%B0%E6%8D%AE%E5%BA%93/redis/6_%E9%9B%86%E7%BE%A4%EF%BC%881%EF%BC%89.md)
 
 ![](./images/一致性hash算法.png)
 
