@@ -353,7 +353,7 @@ Tomcat配合Nginx实现单机上部署两个Tomcat节点的集群。
         index index.html index.htm index.jsp index.php; 
         #error_page 404 /404.html; 
         location / { 
-            proxy_pass http://www.sherman.com;
+            proxy_pass http://www.funnymall.com;
             add_header Access-Control-Allow-Origin *; 
         } 
     }
