@@ -86,7 +86,6 @@ public class ProductController {
         if(StringUtils.isBlank(orderBy)){
             orderBy = "price_asc";
         }
-
         return iProductService.getProductByKeywordCategory(keyword,categoryId,pageNum,pageSize,orderBy);
     }
 

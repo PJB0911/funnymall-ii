@@ -353,7 +353,7 @@ Tomcat配合Nginx实现单机上部署两个Tomcat节点的集群。
         index index.html index.htm index.jsp index.php; 
         #error_page 404 /404.html; 
         location / { 
-            proxy_pass http://www.sherman.com;
+            proxy_pass http://www.funnymall.com;
             add_header Access-Control-Allow-Origin *; 
         } 
     }
@@ -481,6 +481,8 @@ Redis分布式算法在数据非常分布不均匀情况下，注意这是个相
 ```
 
 从上述公式可以看出：随着虚拟节点m的数量不断增加，缓存命中率在不断提高。
+
+- [一致性哈希](https://github.com/CyC2018/CS-Notes/blob/master/notes/%E7%BC%93%E5%AD%98.md#%E5%85%AD%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C)
 
 #### 6.3 分布式连接池
 
