@@ -876,7 +876,7 @@ public void closeOrderTaskV3() {
             }
         } else {
             // 1. lockValueStr == null，说明之前的setnx失败，result==null，应该返回获取锁失败
-            // 2. System.currentTimeMills() > Long.parseLong(lockValueStr)，说明tomcat在key
+            // 2. System.currentTimeMills() < Long.parseLong(lockValueStr)，说明tomcat在key
             // 的有效期内重启成功，此时还在锁的有效期内，别的线程也不应该获取锁，返回获取锁失败
             log.info("没有获取到分布式锁:{}", Const.RedisLock.CLOSE_ORDER_TASK_LOCK);
         }
