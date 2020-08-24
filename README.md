@@ -540,7 +540,7 @@ private static void init() {
 
 
 
-### 七、 Spring Session框架集成零侵入实现单点登录
+### 七、Spring Session框架集成零侵入实现单点登录
 [Spring Session+Redis零侵入实现单点登录](https://blog.csdn.net/a2267378/article/details/81639059)
 ------
 
