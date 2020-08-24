@@ -1,8 +1,31 @@
-## funnymall架构演进——Tomcat集群和Redis分布式
+# funnymall架构演进——Tomcat集群和Redis分布式
 
 在[funnymall](https://github.com/PJB0911/funnymall)基础上进行演进，主要涉及到Tomcat集群、Nginx负载均衡和Redis分布式锁.
 
-项目文件结构：
+
+
+* [项目文件结构](#项目文件结构：)
+* [项目结构](#项目结构)
+* [项目环境&参考资料](#项目环境&参考资料)
+* [项目总结](#项目总结)
+  * [集成Lombok框架](#一、集成Lombok框架)
+  * [Maven环境隔离](#二、Maven环境隔离)
+  * [Tomcat集群部署](#三、Tomcat集群部署)
+  * [Redis基础](#四、Redis基础)
+  * [单点登录](#五、单点登录)
+  * [Redis分布式算法&分布式连接池](#六、Redis分布式算法&分布式连接池)
+  * [Spring Session框架集成零侵入实现单点登录](#七、Spring Session框架集成零侵入实现单点登录)
+  * [Spring MVC异常处理](#八、Spring MVC异常处理)
+  * [拦截器管理员权限统一校验](#九、拦截器管理员权限统一校验)
+  * [RestFul风格改造](#十、RestFul风格改造)
+  * [Spring Schedule定时关单](#十一、Spring Schedule定时关单)
+  * [分布式锁原理&实现](#十二、分布式锁原理&实现)
+  * [Redisson框架集成](#十三、Redisson框架集成)
+
+
+------
+
+## 项目文件结构：
 
 ```txt
 tlmall-springboot-ii
