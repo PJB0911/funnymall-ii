@@ -49,6 +49,7 @@
         manage/product/save.do /manage/**
         manage/order/detail.do /manage/**-->
     <mvc:interceptors>
+
         <mvc:interceptor>
             <mvc:mapping path="/manage/**"/>
            <!-- <mvc:exclude-mapping path="/manage/user/login.do"/>-->

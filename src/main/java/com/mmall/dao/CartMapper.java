@@ -2,6 +2,8 @@ package com.mmall.dao;
 
 import com.mmall.pojo.Cart;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ public interface CartMapper {
      * @param id 购物车id
      * @return 删除行数
      */
+    @Result
     int deleteByPrimaryKey(Integer id);
 
     /**
